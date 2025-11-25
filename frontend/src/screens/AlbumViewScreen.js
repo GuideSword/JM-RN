@@ -19,6 +19,7 @@ export default function AlbumViewScreen({ route, navigation }) {
   const [loading, setLoading] = useState(true);
   const [viewingIndex, setViewingIndex] = useState(-1);
   const [viewingImages, setViewingImages] = useState([]);
+  const [hasPDF, setHasPDF] = useState(false);
 
   useEffect(() => {
     loadImages();
@@ -35,6 +36,16 @@ export default function AlbumViewScreen({ route, navigation }) {
         apiService.getImageUrl(albumId, img.path)
       );
       setViewingImages(imageUrls);
+
+      // 检查是否有PDF
+      try {
+        const pdfUrl = apiService.getPDFUrl(albumId);
+        // 简单的检查：如果URL存在，假设PDF存在
+        // 实际检查会在PDFViewScreen中处理
+        setHasPDF(true);
+      } catch (e) {
+        setHasPDF(false);
+      }
     } catch (error) {
       console.error('加载图片信息失败:', error);
       Alert.alert('错误', '加载图片信息失败');
@@ -42,6 +53,10 @@ export default function AlbumViewScreen({ route, navigation }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleViewPDF = () => {
+    navigation.navigate('PDFView', { albumId });
   };
 
   const handleImagePress = (index) => {
@@ -88,6 +103,14 @@ export default function AlbumViewScreen({ route, navigation }) {
         <Text style={styles.headerText}>
           专辑 {albumId} ({imagesInfo.total} 张图片)
         </Text>
+        {hasPDF && (
+          <TouchableOpacity
+            style={styles.pdfButton}
+            onPress={handleViewPDF}
+          >
+            <Text style={styles.pdfButtonText}>查看PDF</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <FlatList
@@ -141,11 +164,27 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   headerText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
+    flex: 1,
+  },
+  pdfButton: {
+    backgroundColor: '#FF6B6B',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 6,
+    marginLeft: 12,
+  },
+  pdfButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   list: {
     padding: 8,

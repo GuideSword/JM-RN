@@ -1,3 +1,0 @@
-ncatbot
-jmcomic
-img2pdf

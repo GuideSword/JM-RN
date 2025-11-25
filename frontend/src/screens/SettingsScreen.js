@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useApi } from '../contexts/ApiContext';
+import apiService from '../services/api';
 
 export default function SettingsScreen() {
   const { baseURL, isConnected, updateBaseURL, checkConnection } = useApi();
@@ -47,12 +48,35 @@ export default function SettingsScreen() {
   };
 
   const handleTest = async () => {
+    if (!inputURL.trim()) {
+      Alert.alert('错误', '请输入API地址');
+      return;
+    }
+
+    // 简单的URL格式验证
+    if (!inputURL.startsWith('http://') && !inputURL.startsWith('https://')) {
+      Alert.alert('错误', 'API地址必须以 http:// 或 https:// 开头');
+      return;
+    }
+
     setTesting(true);
     try {
-      await checkConnection();
-      Alert.alert('测试结果', isConnected ? '连接成功！' : '连接失败，请检查地址');
+      // 直接使用输入框中的URL进行测试，不保存
+      const trimmedURL = inputURL.trim();
+      const testResult = await apiService.checkHealth(trimmedURL);
+      Alert.alert('测试结果', '连接成功！', [
+        {
+          text: '保存',
+          onPress: () => handleSave(),
+          style: 'default',
+        },
+        {
+          text: '取消',
+          style: 'cancel',
+        },
+      ]);
     } catch (error) {
-      Alert.alert('测试结果', '连接失败，请检查地址和网络');
+      Alert.alert('测试结果', error.message || '连接失败，请检查地址和网络');
     } finally {
       setTesting(false);
     }

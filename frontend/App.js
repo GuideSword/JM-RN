@@ -10,6 +10,7 @@ import DownloadScreen from './src/screens/DownloadScreen';
 import LibraryScreen from './src/screens/LibraryScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import AlbumViewScreen from './src/screens/AlbumViewScreen';
+import PDFViewScreen from './src/screens/PDFViewScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -50,6 +51,11 @@ function LibraryStack() {
         name="AlbumView" 
         component={AlbumViewScreen}
         options={{ title: '查看专辑' }}
+      />
+      <Stack.Screen 
+        name="PDFView" 
+        component={PDFViewScreen}
+        options={{ title: 'PDF查看' }}
       />
     </Stack.Navigator>
   );

@@ -44,7 +44,24 @@ export default function LibraryScreen({ navigation }) {
   };
 
   const handleAlbumPress = (album) => {
-    navigation.navigate('AlbumView', { albumId: album.album_id });
+    // 如果有PDF，优先显示PDF；否则显示图片
+    if (album.has_pdf) {
+      navigation.navigate('PDFView', { albumId: album.album_id });
+    } else if (album.has_images) {
+      navigation.navigate('AlbumView', { albumId: album.album_id });
+    } else {
+      Alert.alert('提示', '该专辑暂无可用内容');
+    }
+  };
+
+  const handlePDFPress = (albumId, event) => {
+    event.stopPropagation(); // 阻止触发handleAlbumPress
+    navigation.navigate('PDFView', { albumId });
+  };
+
+  const handleImagesPress = (albumId, event) => {
+    event.stopPropagation(); // 阻止触发handleAlbumPress
+    navigation.navigate('AlbumView', { albumId });
   };
 
   const renderAlbum = ({ item }) => (
@@ -57,14 +74,20 @@ export default function LibraryScreen({ navigation }) {
         {item.title && <Text style={styles.albumTitle}>{item.title}</Text>}
         <View style={styles.badges}>
           {item.has_pdf && (
-            <View style={[styles.badge, styles.pdfBadge]}>
+            <TouchableOpacity
+              style={[styles.badge, styles.pdfBadge]}
+              onPress={(e) => handlePDFPress(item.album_id, e)}
+            >
               <Text style={styles.badgeText}>PDF</Text>
-            </View>
+            </TouchableOpacity>
           )}
           {item.has_images && (
-            <View style={[styles.badge, styles.imageBadge]}>
+            <TouchableOpacity
+              style={[styles.badge, styles.imageBadge]}
+              onPress={(e) => handleImagesPress(item.album_id, e)}
+            >
               <Text style={styles.badgeText}>图片</Text>
-            </View>
+            </TouchableOpacity>
           )}
         </View>
       </View>

@@ -106,17 +106,30 @@ class ApiService {
     return `${this.baseURL}/api/v1/download/image/${albumId}/${encodedPath}`;
   }
 
-  async checkHealth() {
+  async checkHealth(url = null) {
     try {
-      const response = await this.getAxiosInstance().get('/health', {
+      // 如果提供了URL参数，临时使用该URL
+      const testURL = url || this.baseURL;
+      const axiosInstance = url 
+        ? axios.create({
+            baseURL: testURL,
+            timeout: 5000,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+        : this.getAxiosInstance();
+      
+      const response = await axiosInstance.get('/health', {
         timeout: 5000, // 5秒超时
       });
       return response.data;
     } catch (error) {
       console.error('健康检查失败:', error);
       // 提供更友好的错误信息
+      const errorURL = url || this.baseURL;
       if (error.code === 'ECONNREFUSED' || error.message.includes('Network Error')) {
-        throw new Error(`无法连接到服务器 ${this.baseURL}。请检查：\n1. 后端服务是否正在运行\n2. API地址是否正确（不能使用localhost）\n3. 手机和电脑是否在同一WiFi网络`);
+        throw new Error(`无法连接到服务器 ${errorURL}。请检查：\n1. 后端服务是否正在运行\n2. API地址是否正确（不能使用localhost）\n3. 手机和电脑是否在同一WiFi网络`);
       }
       throw error;
     }
