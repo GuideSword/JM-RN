@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "frontend",
+    "name": "往日种种",
     "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/dz.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -24,6 +24,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "43c3906a-a92d-478e-b64b-edcfc0b625c9"
+      }
+    },
+    "owner": "guidesword"
   }
 }
